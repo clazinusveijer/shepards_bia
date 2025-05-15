@@ -25,8 +25,6 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     # Load functions and pre-calculated data
     df_p_mv_icu <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_p_mv_icu.csv", sep = ',')
     
-    df_p_lts_d <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_p_lts_d.csv", sep = ',')
-    
     #load the file with hazard ratios for return to work per ICU length of stay (no. days)
     df_hr_iculos_rtw <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_hr_iculos_rtw.csv", sep = ',')
     #extend the file with hazard ratio of the final day until to total number of cycles
@@ -144,7 +142,7 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     p_REH_REC     <- 1-(exp(-(-log(0.5)/LTS_RTW_median_d)))
     
     p_REH_D_st_1     <- 1-((1-0.042)^(1/(2*365))) #related to p_REH_REC and specific for age <65
-    p_REH_D_st_2     <- 1-((1-mean(df_p_lts_d$p_LTS_D[which(df_p_lts_d$month == 2 & df_p_lts_d$age_group_id == 2)]))^(1/(11*30))) #not related to p_REH_REC and specific for age >=65 
+    p_REH_D_st_2     <- 1-(1-0.356)^(1/(2*30)) #difference in mortality between day 30 and day 365, not related to p_REH_REC and specific for age >=65 
     df_p_REH_D <- data.frame(age_group_id = c(1,2), p_REH_D = c(p_REH_D_st_1, p_REH_D_st_2))
     
     #### Customized costs 
