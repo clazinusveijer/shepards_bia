@@ -529,7 +529,10 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
                group = State,
                color = State)) +
       geom_line(linewidth = 1) +
-      labs(title = str_c("Total costs per health state for ", Trt))
+      xlab("Days") +
+      ylab("Costs in Euros") +
+      labs(title = str_c("Total costs per health state for ", Trt),
+           colour = "Health state")
   } 
   
   run_simulation <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
