@@ -379,6 +379,7 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     c_t[M_t %in% c("GW_mild", "GW_moderate", "GW_severe")] <- if_else(Trt == "FX06 treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_GW")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_GW")])
     c_t[M_t == "REH"]  <- df_c$value[which(df_c$type == "c_REH")]
     c_t[M_t == "REC"]  <- df_c$value[which(df_c$type == "c_REC")]
+    c_t[M_t == "D"]    <- 0
     
     return(c_t)  # return costs accrued this cycle
   }
