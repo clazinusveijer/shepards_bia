@@ -1,6 +1,6 @@
-run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
   
-  input_parameters <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+  input_parameters <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
     country_analysis <- country_analysis
     cycle_length   <- 1/365  # cycle length equal to one year
     n_cycles       <- 60    # time horizon, number of cycles
@@ -142,7 +142,7 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     p_REH_REC     <- 1-(exp(-(-log(0.5)/LTS_RTW_median_d)))
     
     p_REH_D_st_1     <- 1-((1-0.042)^(1/(2*365))) #related to p_REH_REC and specific for age <65
-    p_REH_D_st_2     <- 1-(1-0.356)^(1/(2*30)) #difference in mortality between day 30 and day 365, not related to p_REH_REC and specific for age >=65 
+    p_REH_D_st_2     <- 1-(1-0.356)^(1/(2*30)) #difference in mortality between day 1 and day 60, not related to p_REH_REC and specific for age >=65 
     df_p_REH_D <- data.frame(age_group_id = c(1,2), p_REH_D = c(p_REH_D_st_1, p_REH_D_st_2))
     
     #### Customized costs 
@@ -151,9 +151,8 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     c_GW      <- c_GW  # Each additional day on the general ward for non-ICU patients
     c_REH     <- c_REH
     c_REC     <- c_REC
-    c_D       <- c_D     # annual cost of being dead
     c_trt     <- c_trt # five-day treatment 600/5
-    df_c      <- data.frame(type = c("c_MV", "c_ICU", "c_GW", "c_REH", "c_REC", "c_D", "c_trt"), value = c(c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, c_trt))
+    df_c      <- data.frame(type = c("c_MV", "c_ICU", "c_GW", "c_REH", "c_REC", "c_trt"), value = c(c_MV, c_ICU, c_GW, c_REH, c_REC, c_trt))
     
     # sample from age distribution an initial age for every individual
     mean_age <- 61.5
@@ -380,7 +379,6 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     c_t[M_t %in% c("GW_mild", "GW_moderate", "GW_severe")] <- if_else(Trt == "FX06 treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_GW")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_GW")])
     c_t[M_t == "REH"]  <- df_c$value[which(df_c$type == "c_REH")]
     c_t[M_t == "REC"]  <- df_c$value[which(df_c$type == "c_REC")]
-    c_t[M_t == "D"]    <- df_c$value[which(df_c$type == "c_D")]
     
     return(c_t)  # return costs accrued this cycle
   }
@@ -533,8 +531,8 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     #       colour = "Health state")
   } 
   
-  run_simulation <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
-    input_params <- input_parameters(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, c_D, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe)
+  run_simulation <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+    input_params <- input_parameters(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe)
     df_hr_iculos_rtw <- as.data.frame(input_params$df_hr_iculos_rtw)
     df_p_REH_D <- as.data.frame(input_params$df_p_REH_D)
     df_p_REC_D <- as.data.frame(input_params$df_p_REC_D)
@@ -562,6 +560,6 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     return(outcomes)
   }
   
-  outcomes_st <- run_simulation(country_analysis = country_analysis, n_i = n_i, p_i_mild = p_i_mild, p_i_moderate = p_i_moderate, r_i_MV = r_i_MV, c_trt = c_trt, c_MV = c_MV, c_ICU = c_ICU, c_GW = c_GW, c_REH = c_REH, c_REC = c_REC, c_D = c_D, hr_mild_moderate = hr_mild_moderate, hr_moderate_severe = hr_moderate_severe, hr_mild_severe = hr_mild_severe, hr_MV_ICU_mild = hr_MV_ICU_mild, hr_MV_ICU_moderate = hr_MV_ICU_moderate, hr_MV_ICU_severe = hr_MV_ICU_severe)
+  outcomes_st <- run_simulation(country_analysis = country_analysis, n_i = n_i, p_i_mild = p_i_mild, p_i_moderate = p_i_moderate, r_i_MV = r_i_MV, c_trt = c_trt, c_MV = c_MV, c_ICU = c_ICU, c_GW = c_GW, c_REH = c_REH, c_REC = c_REC, hr_mild_moderate = hr_mild_moderate, hr_moderate_severe = hr_moderate_severe, hr_mild_severe = hr_mild_severe, hr_MV_ICU_mild = hr_MV_ICU_mild, hr_MV_ICU_moderate = hr_MV_ICU_moderate, hr_MV_ICU_severe = hr_MV_ICU_severe)
   return(outcomes_st)
 }
