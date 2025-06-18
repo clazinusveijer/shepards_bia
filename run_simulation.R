@@ -28,7 +28,7 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     #load the file with hazard ratios for return to work per ICU length of stay (no. days)
     df_hr_iculos_rtw <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_hr_iculos_rtw.csv", sep = ',')
     #extend the file with hazard ratio of the final day until to total number of cycles
-    df_hr_iculos_rtw <- rbind(df_hr_iculos_rtw, data.frame(n_cycles_ICU = rep(max(df_hr_iculos_rtw$n_cycles_ICU+1):n_cycles), hr_RTW = df_hr_iculos_rtw$hr_RTW[which(df_hr_iculos_rtw$n_cycles_ICU == 30)]))
+    df_hr_iculos_rtw <- rbind(df_hr_iculos_rtw, data.frame(n_cycles_ICU = rep(max(df_hr_iculos_rtw$n_cycles_ICU+1):(n_cycles+1)), hr_RTW = df_hr_iculos_rtw$hr_RTW[which(df_hr_iculos_rtw$n_cycles_ICU == 30)]))
     
     p_mort <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_p_mort_cy.csv", sep = ',')
     df_p_REC_D <- p_mort %>% filter(country == country_analysis)
@@ -98,13 +98,17 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     median_MV_LOS_severe    <- 11
     
     ### time-dependent MV LOS
-    p_MV_ICU_mild_soc         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]
-    p_MV_ICU_moderate_soc     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]
-    p_MV_ICU_severe_soc       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]
+    p_MV_ICU_mild_soc         <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')])
+    p_MV_ICU_moderate_soc     <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')])
+    p_MV_ICU_severe_soc       <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')])
     
-    p_MV_ICU_mild_trt         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]*hr_MV_ICU_mild
-    p_MV_ICU_severe_trt       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]*hr_MV_ICU_moderate
-    p_MV_ICU_moderate_trt     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]*hr_MV_ICU_severe
+    r_MV_ICU_mild_trt         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]*hr_MV_ICU_mild
+    r_MV_ICU_moderate_trt     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]*hr_MV_ICU_moderate
+    r_MV_ICU_severe_trt       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]*hr_MV_ICU_severe
+    
+    p_MV_ICU_mild_trt         <- 1-exp(-r_MV_ICU_mild_trt)
+    p_MV_ICU_moderate_trt     <- 1-exp(-r_MV_ICU_moderate_trt)
+    p_MV_ICU_severe_trt       <- 1-exp(-r_MV_ICU_severe_trt)
     
     # ICU LOS
     median_ICU_LOS_mild     <- 10
