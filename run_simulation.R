@@ -28,7 +28,7 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     #load the file with hazard ratios for return to work per ICU length of stay (no. days)
     df_hr_iculos_rtw <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_hr_iculos_rtw.csv", sep = ',')
     #extend the file with hazard ratio of the final day until to total number of cycles
-    df_hr_iculos_rtw <- rbind(df_hr_iculos_rtw, data.frame(n_cycles_ICU = rep(max(df_hr_iculos_rtw$n_cycles_ICU+1):n_cycles), hr_RTW = df_hr_iculos_rtw$hr_RTW[which(df_hr_iculos_rtw$n_cycles_ICU == 30)]))
+    df_hr_iculos_rtw <- rbind(df_hr_iculos_rtw, data.frame(n_cycles_ICU = rep(max(df_hr_iculos_rtw$n_cycles_ICU+1):(n_cycles+1)), hr_RTW = df_hr_iculos_rtw$hr_RTW[which(df_hr_iculos_rtw$n_cycles_ICU == 30)]))
     
     p_mort <- read.csv("https://raw.githubusercontent.com/clazinusveijer/shepards_bia/refs/heads/main/model_input_data/df_p_mort_cy.csv", sep = ',')
     df_p_REC_D <- p_mort %>% filter(country == country_analysis)
