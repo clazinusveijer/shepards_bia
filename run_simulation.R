@@ -98,13 +98,17 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     median_MV_LOS_severe    <- 11
     
     ### time-dependent MV LOS
-    p_MV_ICU_mild_soc         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]
-    p_MV_ICU_moderate_soc     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]
-    p_MV_ICU_severe_soc       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]
+    p_MV_ICU_mild_soc         <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')])
+    p_MV_ICU_moderate_soc     <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')])
+    p_MV_ICU_severe_soc       <- 1-exp(-df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')])
     
-    p_MV_ICU_mild_trt         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]*hr_MV_ICU_mild
-    p_MV_ICU_severe_trt       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]*hr_MV_ICU_moderate
-    p_MV_ICU_moderate_trt     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]*hr_MV_ICU_severe
+    r_MV_ICU_mild_trt         <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'mild')]*hr_MV_ICU_mild
+    r_MV_ICU_moderate_trt     <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'moderate')]*hr_MV_ICU_moderate
+    r_MV_ICU_severe_trt       <- df_p_mv_icu$probability[which(df_p_mv_icu$severity_group == 'severe')]*hr_MV_ICU_severe
+    
+    p_MV_ICU_mild_trt         <- 1-exp(-r_MV_ICU_mild_trt)
+    p_MV_ICU_moderate_trt     <- 1-exp(-r_MV_ICU_moderate_trt)
+    p_MV_ICU_severe_trt       <- 1-exp(-r_MV_ICU_severe_trt)
     
     # ICU LOS
     median_ICU_LOS_mild     <- 10
@@ -155,8 +159,9 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     df_c      <- data.frame(type = c("c_MV", "c_ICU", "c_GW", "c_REH", "c_REC", "c_trt"), value = c(c_MV, c_ICU, c_GW, c_REH, c_REC, c_trt))
     
     # sample from age distribution an initial age for every individual
-    mean_age <- 61.5
-    sd_age <- 14.9
+    mean_age <- 64.2
+    sd_age <- 12.2
+    set.seed(234)
     v_age_init <- rnorm(n_i, mean = mean_age, sd = sd_age)
     min_age <- 16
     max_age <- 99
