@@ -537,8 +537,8 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     #       colour = "Health state")
   } 
   
-  run_simulation <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
-    input_params <- input_parameters(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe)
+  run_simulation <- function(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+    input_params <- input_parameters(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe)
     df_hr_iculos_rtw <- as.data.frame(input_params$df_hr_iculos_rtw)
     df_p_REH_D <- as.data.frame(input_params$df_p_REH_D)
     df_p_REC_D <- as.data.frame(input_params$df_p_REC_D)
