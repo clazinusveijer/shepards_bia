@@ -1,6 +1,6 @@
-run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
   
-  input_parameters <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
+  input_parameters <- function(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
     country_analysis <- country_analysis
     cycle_length   <- 1/365  # cycle length equal to one year
     n_cycles       <- 60    # time horizon, number of cycles
@@ -159,12 +159,12 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     df_c      <- data.frame(type = c("c_MV", "c_ICU", "c_GW", "c_REH", "c_REC", "c_trt"), value = c(c_MV, c_ICU, c_GW, c_REH, c_REC, c_trt))
     
     # sample from age distribution an initial age for every individual
-    mean_age <- 64.2
-    sd_age <- 12.2
+    mean_age <- mean_age #  64.2
+    sd_age <- sd_age # 12.2
     set.seed(234)
     v_age_init <- rnorm(n_i, mean = mean_age, sd = sd_age)
-    min_age <- 16
-    max_age <- 99
+    min_age <- min_age # 18
+    max_age <- max_age # 99
     df_age <- data.frame(age = round(v_age_init, 0))
     df_age <- df_age %>% mutate(age = if_else(age<min_age, min_age, if_else(age>max_age, max_age, age)))
     df_age <- df_age %>% group_by(age) %>% summarize(prop = n()/n_i)
@@ -566,6 +566,27 @@ run_simulation_st <- function(country_analysis, n_i, p_i_mild, p_i_moderate, r_i
     return(outcomes)
   }
   
-  outcomes_st <- run_simulation(country_analysis = country_analysis, n_i = n_i, p_i_mild = p_i_mild, p_i_moderate = p_i_moderate, r_i_MV = r_i_MV, c_trt = c_trt, c_MV = c_MV, c_ICU = c_ICU, c_GW = c_GW, c_REH = c_REH, c_REC = c_REC, hr_mild_moderate = hr_mild_moderate, hr_moderate_severe = hr_moderate_severe, hr_mild_severe = hr_mild_severe, hr_MV_ICU_mild = hr_MV_ICU_mild, hr_MV_ICU_moderate = hr_MV_ICU_moderate, hr_MV_ICU_severe = hr_MV_ICU_severe)
+  outcomes_st <- run_simulation(country_analysis = country_analysis
+                                , n_i = n_i
+                                , mean_age = mean_age
+                                , sd_age = sd_age
+                                , min_age = min_age
+                                , max_age = max_age
+                                , p_i_mild = p_i_mild
+                                , p_i_moderate = p_i_moderate
+                                , r_i_MV = r_i_MV
+                                , c_trt = c_trt
+                                , c_MV = c_MV
+                                , c_ICU = c_ICU
+                                , c_GW = c_GW
+                                , c_REH = c_REH
+                                , c_REC = c_REC
+                                , hr_mild_moderate = hr_mild_moderate
+                                , hr_moderate_severe = hr_moderate_severe
+                                , hr_mild_severe = hr_mild_severe
+                                , hr_MV_ICU_mild = hr_MV_ICU_mild
+                                , hr_MV_ICU_moderate = hr_MV_ICU_moderate
+                                , hr_MV_ICU_severe = hr_MV_ICU_severe
+                                )
   return(outcomes_st)
 }
