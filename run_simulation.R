@@ -19,7 +19,7 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     
     n_states       <- length(v_names_states) # number of health states 
     v_names_str   <- c("Standard of care",   # store the strategy names
-                       "FX06 treatment") 
+                       "Treatment") 
     n_str         <- length(v_names_str)     # number of strategies
     
     # Load functions and pre-calculated data
@@ -239,42 +239,42 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     # Treatment specific transition probabilities
     if (Trt == "Standard of care") {
       p_mild_moderate <- input_params$p_mild_moderate_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_mild_moderate <- input_params$p_mild_moderate_trt
     }  else { 
       warning("Invalid treatment type (mild_moderate)") 
     }
     if (Trt == "Standard of care") {
       p_moderate_severe <- input_params$p_moderate_severe_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_moderate_severe <- input_params$p_moderate_severe_trt
     }  else {
       warning("Invalid treatment type (moderate_severe)") 
     }
     if (Trt == "Standard of care") {
       p_mild_severe <- input_params$p_mild_severe_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_mild_severe <- input_params$p_mild_severe_trt
     }  else {
       warning("Invalid treatment type (mild_severe)") 
     }
     if (Trt == "Standard of care") {
       p_MV_ICU_mild <- input_params$p_MV_ICU_mild_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_MV_ICU_mild <- input_params$p_MV_ICU_mild_trt
     } else {
       warning("Invalid treatment type (MV_ICU_mild)") 
     }
     if (Trt == "Standard of care") {
       p_MV_ICU_moderate <- input_params$p_MV_ICU_moderate_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_MV_ICU_moderate <- input_params$p_MV_ICU_moderate_trt
     } else { 
       warning("Invalid treatment type (MV_ICU_moderate") 
     }
     if (Trt == "Standard of care") {
       p_MV_ICU_severe <- input_params$p_MV_ICU_severe_soc
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       p_MV_ICU_severe <- input_params$p_MV_ICU_severe_trt
     } else {
       warning("Invalid treatment type (MV_ICU_severe)") 
@@ -374,15 +374,15 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     # Treatment specific transition costs
     if (Trt == "Standard of care") {
       c_trt <- 0
-    } else if (Trt == "FX06 treatment") {
+    } else if (Trt == "Treatment") {
       c_trt <- df_c$value[which(df_c$type == "c_trt")]
     } 
     
     c_t <- c()
     
-    c_t[M_t %in% c("MV_mild", "MV_moderate", "MV_severe")] <- if_else(Trt == "FX06 treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_MV")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_MV")])
-    c_t[M_t %in% c("ICU_mild", "ICU_moderate", "ICU_severe")] <- if_else(Trt == "FX06 treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_ICU")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_ICU")])
-    c_t[M_t %in% c("GW_mild", "GW_moderate", "GW_severe")] <- if_else(Trt == "FX06 treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_GW")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_GW")])
+    c_t[M_t %in% c("MV_mild", "MV_moderate", "MV_severe")] <- if_else(Trt == "Treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_MV")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_MV")])
+    c_t[M_t %in% c("ICU_mild", "ICU_moderate", "ICU_severe")] <- if_else(Trt == "Treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_ICU")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_ICU")])
+    c_t[M_t %in% c("GW_mild", "GW_moderate", "GW_severe")] <- if_else(Trt == "Treatment" & df_X$trt_YN == 1, df_c$value[which(df_c$type == "c_GW")] + df_c$value[which(df_c$type == "c_trt")], df_c$value[which(df_c$type == "c_GW")])
     c_t[M_t == "REH"]  <- df_c$value[which(df_c$type == "c_REH")]
     c_t[M_t == "REC"]  <- df_c$value[which(df_c$type == "c_REC")]
     c_t[M_t == "D"]    <- 0
@@ -554,15 +554,15 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     df_X <- as.data.frame(input_params$df_X)
     df_c <- as.data.frame(input_params$df_c)
     outcomes_SoC   <- MicroSim(Trt="Standard of care", seed = 77, input_params = input_params, df_X = df_X, df_c = df_c, df_hr_iculos_rtw = df_hr_iculos_rtw, df_p_REH_D = df_p_REH_D, df_p_REC_D = df_p_REC_D) 
-    outcomes_trt   <- MicroSim(Trt="FX06 treatment", seed = 77, input_params = input_params, df_X = df_X, df_c = df_c, df_hr_iculos_rtw = df_hr_iculos_rtw, df_p_REH_D = df_p_REH_D, df_p_REC_D = df_p_REC_D)
+    outcomes_trt   <- MicroSim(Trt="Treatment", seed = 77, input_params = input_params, df_X = df_X, df_c = df_c, df_hr_iculos_rtw = df_hr_iculos_rtw, df_p_REH_D = df_p_REH_D, df_p_REC_D = df_p_REC_D)
     df_c_s_soc     <- costs_state_df(outcomes_SoC$m_M, outcomes_SoC$m_C) 
     df_c_s_trt     <- costs_state_df(outcomes_trt$m_M, outcomes_trt$m_C) 
     traceplot_soc  <- health_state_trace_plot(Trt = "Standard of care", outcomes_SoC$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
-    traceplot_trt  <- health_state_trace_plot(Trt = "FX06 treatment", outcomes_trt$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
+    traceplot_trt  <- health_state_trace_plot(Trt = "Treatment", outcomes_trt$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
     avg_costs_soc  <- avg_costs_df(df_c_s_soc) 
     avg_costs_trt  <- avg_costs_df(df_c_s_trt)
     tot_costs_soc  <- tot_costs_df(Trt = "Standard of care", df_c_s_soc) 
-    tot_costs_trt  <- tot_costs_df(Trt = "FX06 treatment", df_c_s_trt)
+    tot_costs_trt  <- tot_costs_df(Trt = "Treatment", df_c_s_trt)
     trt_costs      <- trt_costs_df(df_c_s_trt, c_trt)
     
     outcomes <- list(outcomes_SoC = outcomes_SoC,
