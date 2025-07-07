@@ -193,6 +193,7 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
                    , n_str = n_str
                    , n_states = n_states
                    , n_i = n_i
+                   , v_age_init = v_age_init
                    , df_hr_iculos_rtw = df_hr_iculos_rtw
                    , df_p_REH_D = df_p_REH_D
                    , df_p_REC_D = df_p_REC_D 
@@ -535,7 +536,15 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     #  ylab("Costs in Euros") +
     #  labs(title = str_c("Total costs per health state for ", Trt),
     #       colour = "Health state")
-  } 
+  }
+  
+  trt_costs_df <- function(df_c_s, c_trt){
+    trt_c_s <- df_c_s %>%
+      select(!Individual) %>%
+      mutate(treatment_costs = if_else(Day < 5 & State %in% c("MV", "ICU", "GW"), c_trt, 0)) %>% 
+      group_by() %>% 
+      summarize(trt_costs_tot = round(sum(treatment_costs),2))
+  }
   
   run_simulation <- function(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe){
     input_params <- input_parameters(country_analysis, n_i, mean_age, sd_age, min_age, max_age, p_i_mild, p_i_moderate, r_i_MV, c_trt, c_MV, c_ICU, c_GW, c_REH, c_REC, hr_mild_moderate, hr_moderate_severe, hr_mild_severe, hr_MV_ICU_mild, hr_MV_ICU_moderate, hr_MV_ICU_severe)
@@ -554,6 +563,7 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     avg_costs_trt  <- avg_costs_df(df_c_s_trt)
     tot_costs_soc  <- tot_costs_df(Trt = "Standard of care", df_c_s_soc) 
     tot_costs_trt  <- tot_costs_df(Trt = "FX06 treatment", df_c_s_trt)
+    trt_costs      <- trt_costs_df(df_c_s_trt, c_trt)
     
     outcomes <- list(outcomes_SoC = outcomes_SoC,
                      outcomes_trt = outcomes_trt,
@@ -562,7 +572,8 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
                      avg_costs_soc = avg_costs_soc,
                      avg_costs_trt = avg_costs_trt,
                      tot_costs_soc = tot_costs_soc,
-                     tot_costs_trt = tot_costs_trt)
+                     tot_costs_trt = tot_costs_trt,
+                     trt_costs = trt_costs)
     return(outcomes)
   }
   
