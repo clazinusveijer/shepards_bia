@@ -450,7 +450,7 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     return(results)  # return the results
   }
   
-  health_state_trace_plot <- function(Trt, m_trace, v_names_states, n_i){
+  df_health_state_trace <- function(Trt, m_trace, v_names_states, n_i){
     m_TR <- t(apply(m_trace, 2, function(x) table(factor(x, levels = v_names_states, ordered = TRUE))))
     # m_TR <- m_TR / n_i                                 # calculate the proportion of individuals
     #m_TR <- m_TR / nrow(outcomes_SoC$m_M)
@@ -477,15 +477,6 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
       select(-Severity) %>% 
       group_by(day, healthstate) %>% 
       summarize(Proportion = sum(Prop)/n_i)
-    
-    plot <- pivot_m_healthstate %>% ggplot(aes(x=day,
-                                               y=Proportion,
-                                               group = healthstate,
-                                               color = healthstate
-    ), ylim = c(0, 1)) +
-      geom_line(linewidth = 1) +
-      labs(title = str_c("Health state trace for ", Trt)) 
-    #+ transition_reveal(day)
   }
   
   costs_state_df <- function(m_M, m_C){
@@ -557,8 +548,8 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     outcomes_trt   <- MicroSim(Trt="Treatment", seed = 77, input_params = input_params, df_X = df_X, df_c = df_c, df_hr_iculos_rtw = df_hr_iculos_rtw, df_p_REH_D = df_p_REH_D, df_p_REC_D = df_p_REC_D)
     df_c_s_soc     <- costs_state_df(outcomes_SoC$m_M, outcomes_SoC$m_C) 
     df_c_s_trt     <- costs_state_df(outcomes_trt$m_M, outcomes_trt$m_C) 
-    traceplot_soc  <- health_state_trace_plot(Trt = "Standard of care", outcomes_SoC$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
-    traceplot_trt  <- health_state_trace_plot(Trt = "Treatment", outcomes_trt$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
+    df_traceplot_soc  <- df_health_state_trace(Trt = "Standard of care", outcomes_SoC$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
+    df_traceplot_trt  <- df_health_state_trace(Trt = "Treatment", outcomes_trt$m_M, v_names_states = input_params$v_names_states, n_i = input_params$n_i)
     avg_costs_soc  <- avg_costs_df(df_c_s_soc) 
     avg_costs_trt  <- avg_costs_df(df_c_s_trt)
     tot_costs_soc  <- tot_costs_df(Trt = "Standard of care", df_c_s_soc) 
@@ -567,13 +558,14 @@ run_simulation_st <- function(country_analysis, n_i, mean_age, sd_age, min_age, 
     
     outcomes <- list(outcomes_SoC = outcomes_SoC,
                      outcomes_trt = outcomes_trt,
-                     plot_trace_soc = traceplot_soc,
-                     plot_trace_trt = traceplot_trt,
+                     df_traceplot_soc = df_traceplot_soc,
+                     df_traceplot_trt = df_traceplot_trt,
                      avg_costs_soc = avg_costs_soc,
                      avg_costs_trt = avg_costs_trt,
                      tot_costs_soc = tot_costs_soc,
                      tot_costs_trt = tot_costs_trt,
-                     trt_costs = trt_costs)
+                     trt_costs = trt_costs
+                     )
     return(outcomes)
   }
   
